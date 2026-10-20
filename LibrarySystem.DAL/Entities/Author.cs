@@ -1,4 +1,4 @@
-namespace Library_System.Entities;
+namespace LibrarySystem.API.Entities;
 
 public class Author
 {
