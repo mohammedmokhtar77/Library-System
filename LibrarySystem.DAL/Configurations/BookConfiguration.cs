@@ -1,8 +1,8 @@
-using Library_System.Entities;
+using LibrarySystem.API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Library_System.Configurations;
+namespace LibrarySystem.API.Configurations;
 
 public class BookConfiguration : IEntityTypeConfiguration<Book>
 {
