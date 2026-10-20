@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="Library System/Library System.csproj" />
+  <Project Path="LibrarySystem.API/LibrarySystem.API.csproj" />
+  <Project Path="LibrarySystem.BLL/LibrarySystem.BLL.csproj" />
+  <Project Path="LibrarySystem.DAL/LibrarySystem.DAL.csproj" />
 </Solution>
