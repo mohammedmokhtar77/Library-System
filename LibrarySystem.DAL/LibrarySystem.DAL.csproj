@@ -18,5 +18,11 @@
     <ItemGroup>
       <ProjectReference Include="..\LibrarySystem.Entities\LibrarySystem.Entities.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <None Include="Seeding\SeedData\*.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </None>
+    </ItemGroup>
 
 </Project>
