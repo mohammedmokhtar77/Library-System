@@ -22,5 +22,8 @@ public class LoanConfiguration : IEntityTypeConfiguration<Loan>
             .WithMany(b => b.Loans)
             .HasForeignKey(l => l.BorrowerId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        // For Soft Delete
+        builder.HasQueryFilter(l => !l.IsDeleted);
     }
 }
