@@ -16,5 +16,8 @@ public class BorrowerConfiguration : IEntityTypeConfiguration<Borrower>
 
         builder.Property(b => b.MembershipDate)
             .IsRequired();
+        
+        // For Soft Delete
+        builder.HasQueryFilter(b => !b.IsDeleted);
     }
 }
