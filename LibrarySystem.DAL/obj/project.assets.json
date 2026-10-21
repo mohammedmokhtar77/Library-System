@@ -1293,6 +1293,20 @@
           "buildTransitive/net8.0/_._": {}
         }
       },
+      "LibrarySystem.BLL/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "LibrarySystem.Entities": "1.0.0",
+          "System.Security.Cryptography.Pkcs": "10.0.13"
+        },
+        "compile": {
+          "bin/placeholder/LibrarySystem.BLL.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/LibrarySystem.BLL.dll": {}
+        }
+      },
       "LibrarySystem.Entities/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v10.0",
@@ -3730,6 +3744,11 @@
         "useSharedDesignerContext.txt"
       ]
     },
+    "LibrarySystem.BLL/1.0.0": {
+      "type": "project",
+      "path": "../LibrarySystem.BLL/LibrarySystem.BLL.csproj",
+      "msbuildProject": "../LibrarySystem.BLL/LibrarySystem.BLL.csproj"
+    },
     "LibrarySystem.Entities/1.0.0": {
       "type": "project",
       "path": "../LibrarySystem.Entities/LibrarySystem.Entities.csproj",
@@ -3738,6 +3757,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "LibrarySystem.BLL >= 1.0.0",
       "LibrarySystem.Entities >= 1.0.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.13",
       "Microsoft.EntityFrameworkCore.Tools >= 10.0.13",
@@ -3779,6 +3799,9 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
+            "E:\\Omar\\Courses\\Tracks\\Web Development\\DEPI\\Assignments\\Library System\\LibrarySystem.BLL\\LibrarySystem.BLL.csproj": {
+              "projectPath": "E:\\Omar\\Courses\\Tracks\\Web Development\\DEPI\\Assignments\\Library System\\LibrarySystem.BLL\\LibrarySystem.BLL.csproj"
+            },
             "E:\\Omar\\Courses\\Tracks\\Web Development\\DEPI\\Assignments\\Library System\\LibrarySystem.Entities\\LibrarySystem.Entities.csproj": {
               "projectPath": "E:\\Omar\\Courses\\Tracks\\Web Development\\DEPI\\Assignments\\Library System\\LibrarySystem.Entities\\LibrarySystem.Entities.csproj"
             }
