@@ -1,4 +1,6 @@
+using LibrarySystem.BLL.Interfaces.Repositories;
 using LibrarySystem.DAL.Data;
+using LibrarySystem.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystem.API.Extensions;
@@ -19,6 +21,15 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<LibraryContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
         );
+        return services;
+    }
+
+    public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthorRepository, AuthorRepository>();
+        services.AddScoped<IBookRepository, BookRepository>();
+        services.AddScoped<IBorrowerRepository, BorrowerRepository>();
+        services.AddScoped<ILoanRepository, LoanRepository>();
         return services;
     }
 }
