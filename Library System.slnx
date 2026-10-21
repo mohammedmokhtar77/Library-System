@@ -2,4 +2,5 @@
   <Project Path="LibrarySystem.API/LibrarySystem.API.csproj" />
   <Project Path="LibrarySystem.BLL/LibrarySystem.BLL.csproj" />
   <Project Path="LibrarySystem.DAL/LibrarySystem.DAL.csproj" />
+  <Project Path="LibrarySystem.Entities/LibrarySystem.Entities.csproj" />
 </Solution>
