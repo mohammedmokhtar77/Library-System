@@ -1,6 +1,8 @@
+using LibrarySystem.Entities.Base;
+
 namespace LibrarySystem.Entities.Models;
 
-public class Borrower
+public class Borrower : AuditableEntity
 {
     public int Id { get; set; }
 
