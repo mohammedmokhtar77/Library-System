@@ -1,7 +1,7 @@
-using LibrarySystem.API.Entities;
+using LibrarySystem.Entities.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibrarySystem.API.Data;
+namespace LibrarySystem.DAL.Data;
 
 public class LibraryContext : DbContext
 {
