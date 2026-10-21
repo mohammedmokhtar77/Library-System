@@ -17,12 +17,12 @@ namespace LibrarySystem.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Library_System.Entities.Author", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,17 +33,38 @@ namespace LibrarySystem.API.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Book", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,15 +75,36 @@ namespace LibrarySystem.API.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ISBN")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -74,13 +116,28 @@ namespace LibrarySystem.API.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Borrower", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Borrower", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("MembershipDate")
                         .HasColumnType("datetime2");
@@ -90,12 +147,18 @@ namespace LibrarySystem.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Borrowers");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Loan", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Loan", b =>
                 {
                     b.Property<int>("BookId")
                         .HasColumnType("int");
@@ -103,11 +166,32 @@ namespace LibrarySystem.API.Migrations
                     b.Property<int>("BorrowerId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("LoanDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ReturnDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("BookId", "BorrowerId");
 
@@ -116,9 +200,9 @@ namespace LibrarySystem.API.Migrations
                     b.ToTable("Loans");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Book", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Book", b =>
                 {
-                    b.HasOne("Library_System.Entities.Author", "Author")
+                    b.HasOne("LibrarySystem.Entities.Models.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -127,15 +211,15 @@ namespace LibrarySystem.API.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Loan", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Loan", b =>
                 {
-                    b.HasOne("Library_System.Entities.Book", "Book")
+                    b.HasOne("LibrarySystem.Entities.Models.Book", "Book")
                         .WithMany("Loans")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Library_System.Entities.Borrower", "Borrower")
+                    b.HasOne("LibrarySystem.Entities.Models.Borrower", "Borrower")
                         .WithMany("Loans")
                         .HasForeignKey("BorrowerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -146,17 +230,17 @@ namespace LibrarySystem.API.Migrations
                     b.Navigation("Borrower");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Author", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Author", b =>
                 {
                     b.Navigation("Books");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Book", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Book", b =>
                 {
                     b.Navigation("Loans");
                 });
 
-            modelBuilder.Entity("Library_System.Entities.Borrower", b =>
+            modelBuilder.Entity("LibrarySystem.Entities.Models.Borrower", b =>
                 {
                     b.Navigation("Loans");
                 });
