@@ -21,5 +21,8 @@ public class AuthorConfiguration : IEntityTypeConfiguration<Author>
             .WithOne(b => b.Author)
             .HasForeignKey(b => b.AuthorId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        // For Soft Delete
+        builder.HasQueryFilter(a => !a.IsDeleted);
     }
 }
