@@ -1,4 +1,4 @@
-namespace LibrarySystem.API.Entities;
+namespace LibrarySystem.Entities.Models;
 
 public class Borrower
 {
