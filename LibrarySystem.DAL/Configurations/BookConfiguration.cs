@@ -25,5 +25,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
             .WithMany(a => a.Books)
             .HasForeignKey(b => b.AuthorId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // For Soft Delete
+        builder.HasQueryFilter(b => !b.IsDeleted);
     }
 }
