@@ -1,6 +1,4 @@
 using LibrarySystem.API.Extensions;
-using LibrarySystem.DAL.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace LibrarySystem.API;
 
@@ -18,6 +16,7 @@ public class Program
 
         builder.Services.AddSwaggerServices();
         builder.Services.AddDatabaseServices(builder.Configuration);
+        builder.Services.AddRepositoryServices();
 
         var app = builder.Build();
 
