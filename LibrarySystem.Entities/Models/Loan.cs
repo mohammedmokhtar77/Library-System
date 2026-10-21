@@ -1,6 +1,8 @@
+using LibrarySystem.Entities.Base;
+
 namespace LibrarySystem.Entities.Models;
 
-public class Loan
+public class Loan : AuditableEntity
 {
     // Composite Primary Key + Foreign Key
     public int BookId { get; set; }
