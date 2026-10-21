@@ -1,6 +1,8 @@
+using LibrarySystem.Entities.Base;
+
 namespace LibrarySystem.Entities.Models;
 
-public class Author
+public class Author : AuditableEntity
 {
     public int Id { get; set; }
 
