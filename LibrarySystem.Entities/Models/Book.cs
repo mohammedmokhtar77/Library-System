@@ -1,6 +1,8 @@
+using LibrarySystem.Entities.Base;
+
 namespace LibrarySystem.Entities.Models;
 
-public class Book
+public class Book : AuditableEntity
 {
     public int Id { get; set; }
 
