@@ -1,102 +1,120 @@
+
 using LibrarySystem.BLL.DTOs.Books;
-using LibrarySystem.BLL.Interfaces.Repositories;
-using LibrarySystem.Entities.Models;
+using LibrarySystem.BLL.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BooksController(IBookRepository repository) : ControllerBase
+public class BookController(IBookService services) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<BookDto>>>
-        GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAll(
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default)
     {
-        var books = await repository.GetAllAsync(cancellationToken);
+        var result = await services.GetAllAsync(
+            pageNumber,
+            pageSize,
+            cancellationToken);
 
-        var bookDto = books.Select(b => new BookDto
-        {
-            Id = b.Id,
-            Title = b.Title,
-            ISBN = b.ISBN,
-            AuthorId = b.AuthorId
-        }).ToList();
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
-        return Ok(bookDto);
+        return Ok(result.Data);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<BookDto>> 
-        GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetById(
+        int id,
+        CancellationToken cancellationToken)
     {
-        var book = await repository.GetByIdAsync(id, cancellationToken);
+        var result = await services.GetByIdAsync(
+            id,
+            cancellationToken);
 
-        if (book is null)
-            return NotFound();
-
-        var bookDto = new BookDto
+        if (!result.IsSuccess)
         {
-            Id = book.Id,
-            Title = book.Title,
-            ISBN = book.ISBN,
-            AuthorId = book.AuthorId
-        };
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
 
-        return Ok(bookDto);
+            return BadRequest(new { error = result.Error });
+        }
+
+        return Ok(result.Data);
     }
 
     [HttpPost]
-    public async Task<ActionResult<BookDto>>
-        CreateAsync(CreateBookDto bookDto, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Create(
+        [FromBody] CreateBookDto dto,
+        CancellationToken cancellationToken)
     {
-        var book = new Book
-        {
-            Title = bookDto.Title,
-            ISBN = bookDto.ISBN,
-            AuthorId = bookDto.AuthorId
-        };
+        var result = await services.CreateAsync(
+            dto,
+            cancellationToken);
 
-        var createdBook = await repository.AddAsync(book, cancellationToken);
-
-        var result = new BookDto
-        {
-            Id = createdBook.Id,
-            Title = createdBook.Title,
-            ISBN = createdBook.ISBN,
-            AuthorId = createdBook.AuthorId
-        };
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
         return CreatedAtAction(
-            nameof(GetByIdAsync),
-            new { id = createdBook.Id },
-            result);
+            nameof(GetById),
+            new { id = result.Data!.Id },
+            result.Data);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateAsync(
+    public async Task<IActionResult> Update(
         int id,
-        UpdateBookDto bookDto,
-        CancellationToken cancellationToken = default)
+        [FromBody] UpdateBookDto dto,
+        CancellationToken cancellationToken)
     {
-        var updated = await repository.UpdateAsync(new Book
-        {
-            Id = id,
-            Title = bookDto.Title,
-            ISBN = bookDto.ISBN,
-            AuthorId = bookDto.AuthorId
-        }, cancellationToken);
+        var result = await services.UpdateAsync(
+            id,
+            dto,
+            cancellationToken);
 
-        return updated ? NoContent() : NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteAsync(
+    public async Task<IActionResult> Delete(
         int id,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var deleted = await repository.DeleteAsync(id, cancellationToken);
+        var result = await services.DeleteAsync(
+            id,
+            cancellationToken);
 
-        return deleted ? NoContent() : NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
 }
