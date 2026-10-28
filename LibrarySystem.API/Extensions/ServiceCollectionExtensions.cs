@@ -1,4 +1,7 @@
+using LibrarySystem.BLL.DTOs.Mapping;
 using LibrarySystem.BLL.Interfaces.Repositories;
+using LibrarySystem.BLL.Interfaces.Services;
+using LibrarySystem.BLL.Services;
 using LibrarySystem.DAL.Data;
 using LibrarySystem.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +33,22 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBookRepository, BookRepository>();
         services.AddScoped<IBorrowerRepository, BorrowerRepository>();
         services.AddScoped<ILoanRepository, LoanRepository>();
+        services.AddScoped<IAuthorService, AuthorService>();
+        services.AddScoped<IBookService, BookService>();
+        services.AddScoped<IBorrowerService, BorrowerService>();
+        services.AddScoped<ILoanService, LoanService>();
+        return services;
+    }
+
+    public static IServiceCollection AddMappingServices(this IServiceCollection services)
+    {
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.AddProfile<AuthorProfile>();
+            cfg.AddProfile<BookProfile>();
+            cfg.AddProfile<BorrowerProfile>();
+            cfg.AddProfile<LoanProfile>();
+        });
         return services;
     }
 }
