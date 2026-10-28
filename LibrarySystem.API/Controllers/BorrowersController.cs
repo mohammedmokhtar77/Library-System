@@ -1,100 +1,120 @@
+
 using LibrarySystem.BLL.DTOs.Borrowers;
-using LibrarySystem.BLL.Interfaces.Repositories;
-using LibrarySystem.Entities.Models;
+using LibrarySystem.BLL.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BorrowersController(IBorrowerRepository repository) : ControllerBase
+public class BorrowerController(IBorrowerService services) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<BorrowerDto>>> GetAllAsync(
+    public async Task<IActionResult> GetAll(
+         int pageNumber ,
+         int pageSize ,
         CancellationToken cancellationToken = default)
     {
-        var borrowers = await repository.GetAllAsync(cancellationToken);
+        var result = await services.GetAllAsync(
+            pageNumber,
+            pageSize,
+            cancellationToken);
 
-        var borrowerDtos = borrowers.Select(b => new BorrowerDto
-        {
-            Id = b.Id,
-            Name = b.Name,
-            MembershipDate = b.MembershipDate
-        }).ToList();
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
-        return Ok(borrowerDtos);
+        return Ok(result.Data);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<BorrowerDto>> GetByIdAsync(
+    public async Task<IActionResult> GetById(
         int id,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var borrower = await repository.GetByIdAsync(id, cancellationToken);
+        var result = await services.GetByIdAsync(
+            id,
+            cancellationToken);
 
-        if (borrower is null)
-            return NotFound();
-
-        var borrowerDto = new BorrowerDto
+        if (!result.IsSuccess)
         {
-            Id = borrower.Id,
-            Name = borrower.Name,
-            MembershipDate = borrower.MembershipDate
-        };
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
 
-        return Ok(borrowerDto);
+            return BadRequest(new { error = result.Error });
+        }
+
+        return Ok(result.Data);
     }
 
     [HttpPost]
-    public async Task<ActionResult<BorrowerDto>> CreateAsync(
-        CreateBorrowerDto borrowerDto,
-        CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Create(
+        [FromBody] CreateBorrowerDto dto,
+        CancellationToken cancellationToken)
     {
-        var borrower = new Borrower
-        {
-            Name = borrowerDto.Name,
-            MembershipDate = borrowerDto.MembershipDate
-        };
+        var result = await services.CreateAsync(
+            dto,
+            cancellationToken);
 
-        var createdBorrower = await repository.AddAsync(
-            borrower, cancellationToken);
-
-        var result = new BorrowerDto
-        {
-            Id = createdBorrower.Id,
-            Name = createdBorrower.Name,
-            MembershipDate = createdBorrower.MembershipDate
-        };
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
         return CreatedAtAction(
-            nameof(GetByIdAsync),
-            new { id = createdBorrower.Id },
-            result);
+            nameof(GetById),
+            new { id = result.Data!.Id },
+            result.Data);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateAsync(
+    public async Task<IActionResult> Update(
         int id,
-        UpdateBorrowerDto borrowerDto,
-        CancellationToken cancellationToken = default)
+        [FromBody] UpdateBorrowerDto dto,
+        CancellationToken cancellationToken)
     {
-        var updated = await repository.UpdateAsync(new Borrower
-        {
-            Id = id, // نحدد المستعير الموجود بالـ ID
-            Name = borrowerDto.Name,
-            MembershipDate = borrowerDto.MembershipDate
-        }, cancellationToken);
+        var result = await services.UpdateAsync(
+            id,
+            dto,
+            cancellationToken);
 
-        return updated ? NoContent() : NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
 
     [HttpDelete("{id:int}")]
-    public async Task<IActionResult> DeleteAsync(
+    public async Task<IActionResult> Delete(
         int id,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var deleted = await repository.DeleteAsync(id, cancellationToken);
+        var result = await services.DeleteAsync(
+            id,
+            cancellationToken);
 
-        return deleted ? NoContent() : NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
 }
