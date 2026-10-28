@@ -1,111 +1,124 @@
 using LibrarySystem.BLL.DTOs.Loans;
-using LibrarySystem.BLL.Interfaces.Repositories;
-using LibrarySystem.Entities.Models;
+using LibrarySystem.BLL.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class LoansController(ILoanRepository repository) : ControllerBase
+public class LoanController(ILoanService services) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<LoanDto>>> GetAllAsync(
-        CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAll(
+        CancellationToken cancellationToken)
     {
-        var loans = await repository.GetAllAsync(cancellationToken);
+        var result = await services.GetAllAsync(cancellationToken);
 
-        var loanDto = loans.Select(ToDto).ToList();
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
-        return Ok(loanDto);
+        return Ok(result.Data);
     }
 
     [HttpGet("{bookId:int}/{borrowerId:int}")]
-    public async Task<ActionResult<LoanDto>> GetByIdAsync(
+    public async Task<IActionResult> GetById(
         int bookId,
         int borrowerId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var loan = await repository.GetByIdAsync(
-            bookId, borrowerId, cancellationToken);
+        var result = await services.GetByIdAsync(
+            bookId,
+            borrowerId,
+            cancellationToken);
 
-        if (loan is null)
-            return NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
 
-        return Ok(ToDto(loan));
+            return BadRequest(new { error = result.Error });
+        }
+
+        return Ok(result.Data);
     }
 
     [HttpPost]
-    public async Task<ActionResult<LoanDto>> CreateAsync(
-        CreateLoanDto loanDto,
-        CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Create(
+        [FromBody] CreateLoanDto dto,
+        CancellationToken cancellationToken)
     {
-        var loan = new Loan
-        {
-            BookId = loanDto.BookId,
-            BorrowerId = loanDto.BorrowerId,
-            LoanDate = loanDto.LoanDate,
-            ReturnDate = loanDto.ReturnDate
-        };
-
-        var createdLoan = await repository.AddAsync(
-            loan, cancellationToken);
-
-        var result = await repository.GetByIdAsync(
-            createdLoan.BookId,
-            createdLoan.BorrowerId,
+        var result = await services.CreateAsync(
+            dto,
             cancellationToken);
 
-        if (result is null)
-            return StatusCode(StatusCodes.Status500InternalServerError);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
         return CreatedAtAction(
-            nameof(GetByIdAsync),
+            nameof(GetById),
             new
             {
-                bookId = createdLoan.BookId,
-                borrowerId = createdLoan.BorrowerId
+                bookId = result.Data!.BookId,
+                borrowerId = result.Data.BorrowerId
             },
-            ToDto(result));
+            result.Data);
     }
 
     [HttpPut("{bookId:int}/{borrowerId:int}")]
-    public async Task<IActionResult> UpdateAsync(
+    public async Task<IActionResult> Update(
         int bookId,
         int borrowerId,
-        UpdateLoanDto loanDto,
-        CancellationToken cancellationToken = default)
+        [FromBody] UpdateLoanDto dto,
+        CancellationToken cancellationToken)
     {
-        var updated = await repository.UpdateAsync(new Loan()
-        {
-            BookId = bookId,
-            BorrowerId = borrowerId,
-            LoanDate = loanDto.LoanDate,
-            ReturnDate = loanDto.ReturnDate,
-        }, cancellationToken);
+        var result = await services.UpdateAsync(
+            bookId,
+            borrowerId,
+            dto,
+            cancellationToken);
 
-        return updated ? NoContent() : NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
 
     [HttpDelete("{bookId:int}/{borrowerId:int}")]
-    public async Task<IActionResult> DeleteAsync(
+    public async Task<IActionResult> Delete(
         int bookId,
         int borrowerId,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
-        var deleted = await repository.DeleteAsync(
-            bookId, borrowerId, cancellationToken);
+        var result = await services.DeleteAsync(
+            bookId,
+            borrowerId,
+            cancellationToken);
 
-        return deleted ? NoContent() : NotFound();
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
-
-    private static LoanDto ToDto(Loan loan) => new()
-    {
-        BookId = loan.BookId,
-        BookTitle = loan.Book.Title,
-        BorrowerId = loan.BorrowerId,
-        BorrowerName = loan.Borrower.Name,
-        LoanDate = loan.LoanDate,
-        ReturnDate = loan.ReturnDate
-    };
 }
