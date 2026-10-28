@@ -17,6 +17,7 @@ public class Program
         builder.Services.AddSwaggerServices();
         builder.Services.AddDatabaseServices(builder.Configuration);
         builder.Services.AddRepositoryServices();
+        builder.Services.AddMappingServices();
 
         var app = builder.Build();
 
