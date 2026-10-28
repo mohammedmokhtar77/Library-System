@@ -41,7 +41,7 @@ public class LoanRepository(LibraryContext context) : ILoanRepository
         if(loanFromDb is null)
             return false;
         loanFromDb.LoanDate = loan.LoanDate;
-        loan.ReturnDate = loan.ReturnDate;   
+        loanFromDb.ReturnDate = loan.ReturnDate;   
         
         await context.SaveChangesAsync(cancellationToken);
         return true;
