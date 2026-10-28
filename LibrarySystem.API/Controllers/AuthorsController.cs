@@ -1,87 +1,119 @@
 using LibrarySystem.BLL.DTOs.Authors;
-using LibrarySystem.BLL.Interfaces.Repositories;
-using LibrarySystem.Entities.Models;
+using LibrarySystem.BLL.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AuthorsController(IAuthorRepository repository) : ControllerBase
+public class AuthorController(IAuthorService service) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<AuthorDto>>>
-        GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAll(
+         int pageNumber ,
+          int pageSize  ,
+        CancellationToken cancellationToken = default)
     {
-        var authors = await repository.GetAllAsync(cancellationToken);
-        var authorDto = authors.Select(a => new AuthorDto
-        {
-            Id = a.Id ,Name = a.Name ,BirthDate = a.BirthDate  
-        }).ToList();
-        
-        return Ok(authorDto);
+        var result = await service.GetAllAsync(
+            pageNumber,
+            pageSize,
+            cancellationToken);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result.Data);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<AuthorDto>>
-        GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetById(
+        int id,
+        CancellationToken cancellationToken)
     {
-        var author = await repository.GetByIdAsync(id, cancellationToken);
-        if (author is null)
-            return NotFound();
-        var authorDto = new AuthorDto()
+        var result = await service.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (!result.IsSuccess)
         {
-            Id = author.Id,
-            Name = author.Name,
-            BirthDate = author.BirthDate
-        };
-        
-        return Ok(authorDto);
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return Ok(result.Data);
     }
 
     [HttpPost]
-    public async Task<ActionResult<AuthorDto>> Create(
-        CreateAuthorDto authorDto,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<IActionResult> Create(
+        [FromBody] CreateAuthorDto dto,
+        CancellationToken cancellationToken)
     {
-        var author = new Author()
-        {
-            Name = authorDto.Name,
-            BirthDate = authorDto.BirthDate
-        };
-        var createdAuthor  = await repository.AddAsync(author, cancellationToken);
+        var result = await service.CreateAsync(
+            dto,
+            cancellationToken);
 
-        var result = new AuthorDto()
-        {
-            Id = author.Id,
-            Name = author.Name,
-            BirthDate = author.BirthDate
-        };
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = createdAuthor.Id }, result);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = result.Data!.Id },
+            result.Data);
     }
 
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> UpdateAsync(int id, UpdateAuthorDto authorDto,
-        CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Update(
+        int id,
+        [FromBody] UpdateAuthorDto dto,
+        CancellationToken cancellationToken)
     {
-        var updated = await repository.UpdateAsync(new Author()
+        var result = await service.UpdateAsync(
+            id,
+            dto,
+            cancellationToken);
+
+        if (!result.IsSuccess)
         {
-            Id = id,
-            Name = authorDto.Name,
-            BirthDate = authorDto.BirthDate
-        }, cancellationToken);
-        
-        return updated ? NoContent() : NotFound();
-    }
-    
-    [HttpDelete("{id:int}")]  
-    public async Task<IActionResult> DeleteAsync(int id, CancellationToken cancellationToken = default)
-    {
-        var deleted = await repository.DeleteAsync(id, cancellationToken);
-        return deleted ? NoContent() : NotFound();
-        
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
     }
 
-    
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var result = await service.DeleteAsync(
+            id,
+            cancellationToken);
+
+        if (!result.IsSuccess)
+        {
+            if (result.Error?.Contains(
+                    "not found",
+                    StringComparison.OrdinalIgnoreCase) == true)
+            {
+                return NotFound(new { error = result.Error });
+            }
+
+            return BadRequest(new { error = result.Error });
+        }
+
+        return NoContent();
+    }
 }
