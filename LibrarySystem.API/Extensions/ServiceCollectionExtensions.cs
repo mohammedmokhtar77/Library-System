@@ -3,6 +3,7 @@ using LibrarySystem.BLL.Interfaces.Repositories;
 using LibrarySystem.BLL.Interfaces.Services;
 using LibrarySystem.BLL.Services;
 using LibrarySystem.DAL.Data;
+using LibrarySystem.DAL.Interceptors;
 using LibrarySystem.DAL.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +23,9 @@ public static class ServiceCollectionExtensions
        (this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<LibraryContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"))
+            options.UseSqlServer(
+                configuration.GetConnectionString("DefaultConnection"))
+                .AddInterceptors(new SoftDeleteInceptor() , new CreatedAtInceptor() , new UpdatedAtInceptor())
         );
         return services;
     }
