@@ -1,4 +1,5 @@
 using LibrarySystem.API.Extensions;
+using LibrarySystem.API.Middlewares;
 
 namespace LibrarySystem.API;
 
@@ -30,6 +31,10 @@ public class Program
             app.UseSwaggerUI();
         }
 
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+        app.UseMiddleware<RequestIdHeaderMiddleware>();
+        app.UseMiddleware<RequestTimingMiddleware>();
+        
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
