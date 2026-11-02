@@ -13,10 +13,14 @@ public class Program
         // Add services to the container.
         builder.Services.AddAuthorization();
         
-        builder.Services.AddControllers();
+        builder.Services.AddControllers().AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.AllowTrailingCommas = true;
+        });
 
         builder.Services.AddSwaggerServices();
         builder.Services.AddDatabaseServices(builder.Configuration);
+        builder.Services.AddAuthenticationServices(builder.Configuration);
         builder.Services.AddRepositoryServices();
         builder.Services.AddMappingServices();
 
@@ -30,13 +34,10 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        app.UseMiddleware<ExceptionHandlingMiddleware>();
-        app.UseMiddleware<RequestIdHeaderMiddleware>();
-        app.UseMiddleware<RequestTimingMiddleware>();
         
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
