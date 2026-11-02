@@ -1,5 +1,7 @@
+using LibrarySystem.DAL.Constants;
 using LibrarySystem.BLL.DTOs.Loans;
 using LibrarySystem.BLL.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
@@ -8,6 +10,7 @@ namespace LibrarySystem.API.Controllers;
 [Route("api/[controller]")]
 public class LoanController(ILoanService services) : ControllerBase
 {
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian}")]
     [HttpGet]
     public async Task<IActionResult> GetAll(
         CancellationToken cancellationToken)
@@ -19,7 +22,7 @@ public class LoanController(ILoanService services) : ControllerBase
 
         return Ok(result.Data);
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian},{RoleNames.Member}")]
     [HttpGet("{bookId:int}/{borrowerId:int}")]
     public async Task<IActionResult> GetById(
         int bookId,
@@ -45,7 +48,7 @@ public class LoanController(ILoanService services) : ControllerBase
 
         return Ok(result.Data);
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian}")]
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromBody] CreateLoanDto dto,
@@ -67,7 +70,7 @@ public class LoanController(ILoanService services) : ControllerBase
             },
             result.Data);
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian}")]
     [HttpPut("{bookId:int}/{borrowerId:int}")]
     public async Task<IActionResult> Update(
         int bookId,
@@ -95,7 +98,7 @@ public class LoanController(ILoanService services) : ControllerBase
 
         return NoContent();
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin}")]
     [HttpDelete("{bookId:int}/{borrowerId:int}")]
     public async Task<IActionResult> Delete(
         int bookId,
