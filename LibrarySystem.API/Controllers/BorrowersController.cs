@@ -1,12 +1,14 @@
-
+using LibrarySystem.DAL.Constants;
 using LibrarySystem.BLL.DTOs.Borrowers;
 using LibrarySystem.BLL.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian}")]
 public class BorrowerController(IBorrowerService services) : ControllerBase
 {
     [HttpGet]
