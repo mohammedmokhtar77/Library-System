@@ -1,5 +1,7 @@
+using LibrarySystem.DAL.Constants;
 using LibrarySystem.BLL.DTOs.Authors;
 using LibrarySystem.BLL.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibrarySystem.API.Controllers;
@@ -8,6 +10,7 @@ namespace LibrarySystem.API.Controllers;
 [Route("api/[controller]")]
 public class AuthorController(IAuthorService service) : ControllerBase
 {
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian},{RoleNames.Member},{RoleNames.Viewer}")]
     [HttpGet]
     public async Task<IActionResult> GetAll(
          int pageNumber ,
@@ -24,7 +27,7 @@ public class AuthorController(IAuthorService service) : ControllerBase
 
         return Ok(result.Data);
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian},{RoleNames.Member},{RoleNames.Viewer}")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(
         int id,
@@ -48,7 +51,7 @@ public class AuthorController(IAuthorService service) : ControllerBase
 
         return Ok(result.Data);
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian}")]
     [HttpPost]
     public async Task<IActionResult> Create(
         [FromBody] CreateAuthorDto dto,
@@ -66,7 +69,7 @@ public class AuthorController(IAuthorService service) : ControllerBase
             new { id = result.Data!.Id },
             result.Data);
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin},{RoleNames.Librarian}")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(
         int id,
@@ -92,7 +95,7 @@ public class AuthorController(IAuthorService service) : ControllerBase
 
         return NoContent();
     }
-
+    [Authorize(Roles = $"{RoleNames.Admin}")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(
         int id,
