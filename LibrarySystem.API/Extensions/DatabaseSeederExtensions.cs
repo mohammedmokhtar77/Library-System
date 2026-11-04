@@ -57,7 +57,8 @@ public static class DatabaseSeederExtensions
         var user = await userManager.FindByEmailAsync(email);
         if (user is null)
         {
-            user = new ApplicationUser { UserName = email, Email = email, FullName = "Administrator" };
+            var fullName = configuration["BootstrapAdmin:FullName"] ?? "Administrator";
+            user = new ApplicationUser { UserName = email, Email = email, FullName = fullName };
             var createResult = await userManager.CreateAsync(user, password);
             if (!createResult.Succeeded)
             {
