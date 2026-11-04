@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Library System domain class diagram</title>
+  <desc id="desc">Author has many books. Books and borrowers are connected through loans. Domain entities inherit common audit fields. ApplicationUser extends ASP.NET Core IdentityUser.</desc>
+  <defs>
+    <style>
+      text { font-family: Segoe UI, Arial, sans-serif; fill: #e8eef8; }
+      .box { fill: #111c2e; stroke: #6e8bb5; stroke-width: 2; rx: 10; }
+      .header { fill: #1c3150; }
+      .title { font-size: 22px; font-weight: 700; }
+      .stereotype { font-size: 13px; fill: #a9bdd9; }
+      .field { font-size: 16px; }
+      .edge { stroke: #8aa6ca; stroke-width: 2; fill: none; }
+      .label { font-size: 14px; fill: #c4d4eb; }
+      .note { font-size: 14px; fill: #b6c5da; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8aa6ca" />
+    </marker>
+    <marker id="diamond" markerWidth="12" markerHeight="12" refX="2" refY="6" orient="auto">
+      <path d="M2,6 L6,2 L10,6 L6,10 z" fill="#111c2e" stroke="#8aa6ca" stroke-width="1.5" />
+    </marker>
+  </defs>
+  <rect width="1200" height="800" fill="#0b1220" />
+
+  <!-- Author -->
+  <g transform="translate(55 75)">
+    <rect class="box" width="300" height="205" />
+    <path class="header" d="M10 0 H290 Q300 0 300 10 V46 H0 V10 Q0 0 10 0Z" />
+    <text class="title" x="150" y="31" text-anchor="middle">Author</text>
+    <text class="field" x="20" y="78">+ Id: int</text><text class="field" x="20" y="108">+ Name: string</text>
+    <text class="field" x="20" y="138">+ BirthDate: DateTime</text><text class="field" x="20" y="178">+ Books: ICollection&lt;Book&gt;</text>
+  </g>
+
+  <!-- Book -->
+  <g transform="translate(445 75)">
+    <rect class="box" width="310" height="235" />
+    <path class="header" d="M10 0 H300 Q310 0 310 10 V46 H0 V10 Q0 0 10 0Z" />
+    <text class="title" x="155" y="31" text-anchor="middle">Book</text>
+    <text class="field" x="20" y="78">+ Id: int</text><text class="field" x="20" y="108">+ Title: string</text>
+    <text class="field" x="20" y="138">+ ISBN: string</text><text class="field" x="20" y="168">+ AuthorId: int</text>
+    <text class="field" x="20" y="198">+ Author: Author</text><text class="field" x="20" y="225">+ Loans: ICollection&lt;Loan&gt;</text>
+  </g>
+
+  <!-- Borrower -->
+  <g transform="translate(55 390)">
+    <rect class="box" width="300" height="205" />
+    <path class="header" d="M10 0 H290 Q300 0 300 10 V46 H0 V10 Q0 0 10 0Z" />
+    <text class="title" x="150" y="31" text-anchor="middle">Borrower</text>
+    <text class="field" x="20" y="78">+ Id: int</text><text class="field" x="20" y="108">+ Name: string</text>
+    <text class="field" x="20" y="138">+ MembershipDate: DateTime</text><text class="field" x="20" y="178">+ Loans: ICollection&lt;Loan&gt;</text>
+  </g>
+
+  <!-- Loan -->
+  <g transform="translate(445 390)">
+    <rect class="box" width="310" height="205" />
+    <path class="header" d="M10 0 H300 Q310 0 310 10 V46 H0 V10 Q0 0 10 0Z" />
+    <text class="title" x="155" y="31" text-anchor="middle">Loan</text>
+    <text class="field" x="20" y="78">+ BookId: int (composite key)</text><text class="field" x="20" y="108">+ BorrowerId: int (composite key)</text>
+    <text class="field" x="20" y="138">+ LoanDate: DateTime</text><text class="field" x="20" y="168">+ ReturnDate: DateTime?</text>
+    <text class="field" x="20" y="195">+ Book / Borrower</text>
+  </g>
+
+  <!-- Auditing base -->
+  <g transform="translate(835 390)">
+    <rect class="box" width="310" height="205" />
+    <path class="header" d="M10 0 H300 Q310 0 310 10 V46 H0 V10 Q0 0 10 0Z" />
+    <text class="stereotype" x="155" y="18" text-anchor="middle">&lt;&lt;abstract base&gt;&gt;</text>
+    <text class="title" x="155" y="39" text-anchor="middle">AuditableEntity</text>
+    <text class="field" x="20" y="83">+ CreatedAt: DateTime?</text><text class="field" x="20" y="113">+ CreatedBy: string?</text>
+    <text class="field" x="20" y="143">+ UpdatedAt: DateTime?</text><text class="field" x="20" y="173">+ UpdatedBy: string?</text>
+    <text class="field" x="20" y="198">+ IsDeleted: bool</text>
+  </g>
+
+  <!-- Identity user -->
+  <g transform="translate(835 75)">
+    <rect class="box" width="310" height="135" />
+    <path class="header" d="M10 0 H300 Q310 0 310 10 V46 H0 V10 Q0 0 10 0Z" />
+    <text class="stereotype" x="155" y="18" text-anchor="middle">&lt;&lt;ASP.NET Core Identity&gt;&gt;</text>
+    <text class="title" x="155" y="39" text-anchor="middle">ApplicationUser</text>
+    <text class="field" x="20" y="82">+ IdentityUser fields</text><text class="field" x="20" y="112">+ FullName: string</text>
+  </g>
+
+  <!-- Identity base type -->
+  <g transform="translate(835 260)">
+    <rect class="box" width="310" height="75" />
+    <path class="header" d="M10 0 H300 Q310 0 310 10 V40 H0 V10 Q0 0 10 0Z" />
+    <text class="stereotype" x="155" y="16" text-anchor="middle">&lt;&lt;ASP.NET Core Identity&gt;&gt;</text>
+    <text class="title" x="155" y="36" text-anchor="middle">IdentityUser</text>
+    <text class="field" x="20" y="65">Id, Email, UserName, PasswordHash, ...</text>
+  </g>
+
+  <!-- Relationships -->
+  <path class="edge" d="M355 175 H445" marker-start="url(#diamond)" />
+  <text class="label" x="365" y="160">1</text><text class="label" x="426" y="160">0..*</text>
+  <path class="edge" d="M600 310 V390" />
+  <text class="label" x="612" y="330">1</text><text class="label" x="612" y="378">0..*</text>
+  <path class="edge" d="M355 492 H445" />
+  <text class="label" x="365" y="477">1</text><text class="label" x="426" y="477">0..*</text>
+  <path class="edge" d="M755 490 H835" marker-end="url(#arrow)" />
+  <path class="edge" d="M755 190 H785 V350 H930 V390" marker-end="url(#arrow)" />
+  <path class="edge" d="M355 250 H380 V350 H870 V390" marker-end="url(#arrow)" />
+  <path class="edge" d="M355 570 H380 V630 H820 V595" marker-end="url(#arrow)" />
+  <path class="edge" d="M990 210 V260" marker-end="url(#arrow)" />
+  <text class="label" x="1000" y="245">inherits</text>
+
+  <text class="note" x="55" y="680">Loan uses (BookId, BorrowerId) as a composite primary key and joins books to borrowers.</text>
+  <text class="note" x="55" y="706">Author, Book, Borrower, and Loan inherit audit and soft-delete fields from AuditableEntity.</text>
+</svg>
