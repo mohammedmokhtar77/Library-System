@@ -42,7 +42,7 @@ public class AccountController :  ControllerBase
         if(!result.Succeeded)
             return BadRequest(result.Errors);
 
-        var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.Admin);
+        var roleResult = await _userManager.AddToRoleAsync(user, RoleNames.Member);
         if (!roleResult.Succeeded)
         {
             await _userManager.DeleteAsync(user);
